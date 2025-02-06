@@ -1,0 +1,93 @@
+import random
+
+class BlackjackGame:
+    def __init__(self, starting_money=50):
+        self.money = starting_money
+        self.deck = self.create_deck()
+
+    def create_deck(self):
+        ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+        return ranks * 8
+
+    def shuffle_deck(self):
+        random.shuffle(self.deck)
+
+    def deal_card(self):
+        return self.deck.pop()
+
+    def calculate_hand_value(self, hand):
+        value = 0
+        aces = 0
+        for card in hand:
+            if card in ['J', 'Q', 'K']:
+                value += 10
+            elif card == 'A':
+                aces += 1
+                value += 11
+            else:
+                value += int(card)
+        
+        while value > 21 and aces:
+            value -= 10
+            aces -= 1
+        
+        return value
+
+    def play_round(self):
+        if self.money <= 0:
+            print("You're out of money! Game over.")
+            return False
+        
+        print("You have ${self.money}")
+        bet = int(input("Enter your bet: "))
+        if bet > self.money or bet <= 0:
+            print("Invalid bet amount.")
+            return True
+
+        self.shuffle_deck()
+        player_hand = [self.deal_card(), self.deal_card()]
+        dealer_hand = [self.deal_card(), self.deal_card()]
+
+        print("Your hand: {player_hand[0]}, {player_hand[1]} - Total: {self.calculate_hand_value(player_hand)}")
+        print("Dealer's hand: {dealer_hand[0]}, ?")
+
+        while self.calculate_hand_value(player_hand) < 21:
+            move = input("Hit or Stand? (h/s): ").lower()
+            if move == 'h':
+                player_hand.append(self.deal_card())
+                print("Your hand: {', '.join(player_hand)} - Total: {self.calculate_hand_value(player_hand)}")
+            else:
+                break
+        
+        player_value = self.calculate_hand_value(player_hand)
+        if player_value > 21:
+            print("Bust! You lose your bet.")
+            self.money -= bet
+            return True
+        
+        while self.calculate_hand_value(dealer_hand) < 17:
+            dealer_hand.append(self.deal_card())
+        
+        dealer_value = self.calculate_hand_value(dealer_hand)
+        print("Dealer's hand: {', '.join(dealer_hand)} - Total: {dealer_value}")
+        
+        if dealer_value > 21 or player_value > dealer_value:
+            print("You win!")
+            self.money += bet
+        elif player_value < dealer_value:
+            print("Dealer wins. You lose your bet.")
+            self.money -= bet
+        else:
+            print("It's a tie. Your bet is returned.")
+        
+        return True
+
+    def start_game(self):
+        while self.money > 0:
+            if not self.play_round():
+                break
+        print("Game over!")
+
+if __name__ == "__main__":
+    game = BlackjackGame()
+    game.start_game()
