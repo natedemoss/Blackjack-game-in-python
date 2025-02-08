@@ -38,7 +38,7 @@ class BlackjackGame:
             print("You're out of money! Game over.")
             return False
         
-        print("You have ${self.money}")
+        print("You have $" + str(self.money))
         bet = int(input("Enter your bet: "))
         if bet > self.money or bet <= 0:
             print("Invalid bet amount.")
@@ -48,14 +48,14 @@ class BlackjackGame:
         player_hand = [self.deal_card(), self.deal_card()]
         dealer_hand = [self.deal_card(), self.deal_card()]
 
-        print("Your hand: {player_hand[0]}, {player_hand[1]} - Total: {self.calculate_hand_value(player_hand)}")
-        print("Dealer's hand: {dealer_hand[0]}, ?")
+        print("Your total hand value: " + str(self.calculate_hand_value(player_hand)))
+        print("Dealer's visible card: " + dealer_hand[0] + " - Total: " + str(self.calculate_hand_value([dealer_hand[0]])))
 
         while self.calculate_hand_value(player_hand) < 21:
             move = input("Hit or Stand? (h/s): ").lower()
             if move == 'h':
                 player_hand.append(self.deal_card())
-                print("Your hand: {', '.join(player_hand)} - Total: {self.calculate_hand_value(player_hand)}")
+                print("Your total hand value: " + str(self.calculate_hand_value(player_hand)))
             else:
                 break
         
@@ -69,7 +69,7 @@ class BlackjackGame:
             dealer_hand.append(self.deal_card())
         
         dealer_value = self.calculate_hand_value(dealer_hand)
-        print("Dealer's hand: {', '.join(dealer_hand)} - Total: {dealer_value}")
+        print("Dealer's total hand value: " + str(dealer_value))
         
         if dealer_value > 21 or player_value > dealer_value:
             print("You win!")
@@ -91,3 +91,4 @@ class BlackjackGame:
 if __name__ == "__main__":
     game = BlackjackGame()
     game.start_game()
+
